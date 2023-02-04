@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import MovieList from './components/MovieList';
 import Movie from './components/Movie';
 
+import EditMovieForm from "./components/EditMovieForm";
+
 import MovieHeader from './components/MovieHeader';
+
+import AddMovieForm from "./components/AddMovieForm";
 
 import FavoriteMovieList from './components/FavoriteMovieList';
 
@@ -24,7 +28,17 @@ const App = (props) => {
       });
   }, []);
 
+const h = useHistory ()
+
+
   const deleteMovie = (id)=> {
+    axios.delete('http://localhost:9000/api/movies/'+id)
+    .then(res => {
+      setMovies(res.data);
+      h.push('/movies')
+    }) .catch(err => {
+        console.log(err);
+    });
   }
 
   const addToFavorites = (movie) => {
@@ -43,11 +57,19 @@ const App = (props) => {
           <FavoriteMovieList favoriteMovies={favoriteMovies}/>
         
           <Switch>
+
+
+
             <Route path="/movies/edit/:id">
+              <EditMovieForm/>
             </Route>
 
             <Route path="/movies/:id">
-              <Movie/>
+              <Movie deleteMovie={deleteMovie}/>
+            </Route>
+
+            <Route path="/movie/add" >
+              <AddMovieForm />
             </Route>
 
             <Route path="/movies">
